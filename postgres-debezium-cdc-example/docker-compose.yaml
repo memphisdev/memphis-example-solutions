@@ -1,0 +1,62 @@
+---
+version: '3'
+services:
+  db:
+    image: docker.io/postgres:bullseye
+    container_name: postgres
+    # need to enable WAL logical replication at startup
+    command: postgres -c wal_level=logical
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "postgres"
+  database-setup:
+    build:
+      context: ./database-setup
+      no_cache: true
+    image: database-setup
+    container_name: database-setup
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: "db"
+      POSTGRES_USER_PASSWORD: "postgres"
+      POSTGRES_ADMIN_PASSWORD: "postgres"
+  rest-receiver:
+    build:
+      context: ./rest-receiver
+      no_cache: true
+    image: rest-receiver
+    container_name: rest-receiver
+    restart: always
+    healthcheck:
+      test: wget --spider http://localhost:8000/healthcheck || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "8000:8000"
+  debezium-server:
+    build:
+      context: ./debezium-server
+      no_cache: true
+    image: debezium-server
+    container_name: debezium-server
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+      rest-receiver:
+        condition: service_healthy
+      database-setup:
+        condition: service_completed_successfully
+    volumes:
+      - ./debezium-conf:/debezium-server/conf:ro
