@@ -1,5 +1,16 @@
 # postgres-debezium-cdc-example
 
+## Running
+You can run the example using Docker compose like so:
+
+```bash
+$ docker compose up --build -d
+```
+
+# Items to Add
+1. List of services and ports
+1. List of usernames and passwords
+
 # Steps
 
 1. `docker compose up -d` to start Postgres
