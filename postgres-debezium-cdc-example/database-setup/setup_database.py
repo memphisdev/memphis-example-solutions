@@ -53,6 +53,7 @@ if __name__ == "__main__":
             cur.execute("CREATE TABLE todo_items ("
                         "item_id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
                         "description text NOT NULL, "
+                        "creation_date timestamp NOT NULL, "
                         "due_date timestamp, "
                         "completed boolean NOT NULL "
                         ");")
