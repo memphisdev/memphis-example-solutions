@@ -30,11 +30,9 @@
 This repository contains examples of integrating [Memphis](https://github.com/memphisdev/memphis), the next-generation message broker, with other open-source technologies to solve technical use cases.
 
 ## Contributing
-This is an open-source project.
+This is an open-source project. We are committed to a fully transparent development process and appreciate highly any contributions.
 
-We are committed to a fully transparent development process and appreciate highly any contributions.
-
-Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the Memphis{dev} community.
+Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as part of the community.
 
 Please refer to our [Code of Conduct](./CODE_OF_CONDUCT.md).
 
