@@ -38,7 +38,7 @@ services:
     container_name: rest-receiver
     restart: always
     healthcheck:
-      test: wget --spider http://localhost:8000/healthcheck || exit 1
+      test: curl http://localhost:8000/healthcheck || exit 1
       interval: 5s
       timeout: 3s
       retries: 5
