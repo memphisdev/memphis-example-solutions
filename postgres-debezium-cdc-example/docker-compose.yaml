@@ -16,7 +16,6 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_PASSWORD: "postgres"
-
   database-setup:
     build:
       context: ./database-setup
@@ -31,7 +30,6 @@ services:
       POSTGRES_HOST: "db"
       POSTGRES_USER_PASSWORD: "postgres"
       POSTGRES_ADMIN_PASSWORD: "postgres"
-
   rest-receiver:
     build:
       context: ./rest-receiver
@@ -46,7 +44,6 @@ services:
       retries: 5
     ports:
       - "8000:8000"
-
   debezium-server:
     image: docker.io/debezium/server:2.2
     container_name: debezium-server
@@ -67,7 +64,6 @@ services:
       - "8080:8080"
     volumes:
       - ./debezium-conf:/debezium/conf:ro
-
   todo-generator:
     build:
       context: ./todo-generator
@@ -88,63 +84,3 @@ services:
       POSTGRES_HOST: "db"
       POSTGRES_USERNAME: "todo_service"
       POSTGRES_PASSWORD: "postgres"
-
-  memphis-metadata:
-    image: memphisos/memphis-metadata:15-docker
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U memphis -p 5005"]
-      interval: 5s
-      timeout: 3s
-      retries: 5
-    ports:
-      - "5005:5005"
-    environment:
-      - POSTGRESQL_USERNAME=memphis
-      - POSTGRESQL_PASSWORD=memphis
-      - POSTGRESQL_DATABASE=memphis
-      - POSTGRESQL_PORT_NUMBER=5005
-
-  memphis:
-    image: "memphisos/memphis:latest"
-    depends_on:
-      memphis-metadata:
-        condition: service_healthy
-    healthcheck:
-      test: wget --spider http://127.0.0.1:9000 || exit 1
-      interval: 10s
-      retries: 5
-      start_period: 5s
-    restart: on-failure
-    pull_policy: always
-    ports:
-      - "9000:9000"
-      - "6666:6666"
-      - "7770:7770"
-    environment:
-      - ROOT_PASSWORD=memphis
-      - DOCKER_ENV=true
-      - ANALYTICS=true
-      - USER_PASS_BASED_AUTH=true
-      - CONNECTION_TOKEN=memphis
-      - METADATA_DB_HOST=memphis-metadata
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-
-  memphis-rest-gateway:
-    image: "memphisos/memphis-rest-gateway:latest"
-    depends_on:
-      memphis:
-        condition: service_healthy
-    restart: on-failure
-    pull_policy: always
-    ports:
-      - "4444:4444"
-    environment:
-      - JWT_SECRET=JWT_TEST_PURPOSE
-      - REFRESH_JWT_SECRET=REFRESH_JWT_TEST_PURPOSE
-      - USER_PASS_BASED_AUTH=true
-      - CONNECTION_TOKEN=memphis
-      - ROOT_USER=root
-      - ROOT_PASSWORD=memphis
-      - MEMPHIS_HOST=memphis
-      - HTTP_PORT=4444
