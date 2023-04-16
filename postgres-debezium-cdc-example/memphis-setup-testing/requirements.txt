@@ -1,0 +1,9 @@
+asyncio==3.4.3
+attrs==23.1.0
+graphql-core==3.2.3
+jsonschema==4.17.3
+memphis-py==1.0.1
+nats-py==2.2.0
+pkg_resources==0.0.0
+protobuf==4.22.3
+pyrsistent==0.19.3
