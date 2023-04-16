@@ -36,7 +36,6 @@ if __name__ == "__main__":
             # need to disable transactions to create / remove databases
             cur.execute("ABORT TRANSACTION;")
             # I tried using SQL parameters but psycopg2 quotes the strings
-            cur.execute("DROP DATABASE IF EXISTS {};".format(DATABASE_NAME))
             cur.execute("CREATE DATABASE {};".format(DATABASE_NAME))
     conn.close()
 
@@ -48,8 +47,6 @@ if __name__ == "__main__":
 
     with psycopg2.connect(database_uri) as conn:
         with conn.cursor() as cur:
-            cur.execute("DROP TABLE IF EXISTS todo_items;")
-
             cur.execute("CREATE TABLE todo_items ("
                         "item_id integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY, "
                         "description text NOT NULL, "
@@ -58,7 +55,6 @@ if __name__ == "__main__":
                         "completed boolean NOT NULL "
                         ");")
 
-            cur.execute("DROP ROLE IF EXISTS {};".format(SERVICE_USER))
             cur.execute("CREATE USER {} WITH PASSWORD '{}';".format(SERVICE_USER,
                                                             os.environ.get(USER_PASSWORD_KEY)))
             cur.execute("GRANT SELECT, INSERT, UPDATE, DELETE ON todo_items TO {};".format(SERVICE_USER))
