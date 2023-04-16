@@ -9,7 +9,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
-      timeout: 5s
+      timeout: 3s
       retries: 5
     restart: always
     ports:
@@ -40,21 +40,18 @@ services:
     healthcheck:
       test: wget --spider http://localhost:8000/healthcheck || exit 1
       interval: 5s
-      timeout: 5s
+      timeout: 3s
       retries: 5
     ports:
       - "8000:8000"
   debezium-server:
-    build:
-      context: ./debezium-server
-      no_cache: true
-    image: debezium-server
+    image: docker.io/debezium/server:2.2
     container_name: debezium-server
     restart: always
     healthcheck:
-      test: wget --spider http://localhost:8080/q/health || exit 1
+      test: curl http://localhost:8080/q/health || exit 1
       interval: 5s
-      timeout: 5s
+      timeout: 3s
       retries: 5
     depends_on:
       db:
@@ -66,7 +63,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./debezium-conf:/debezium-server/conf:ro
+      - ./debezium-conf:/debezium/conf:ro
   todo-generator:
     build:
       context: ./todo-generator
