@@ -51,6 +51,11 @@ services:
     image: debezium-server
     container_name: debezium-server
     restart: always
+    healthcheck:
+      test: wget --spider http://localhost:8080/q/health || exit 1
+      interval: 5s
+      timeout: 5s
+      retries: 5
     depends_on:
       db:
         condition: service_healthy
@@ -58,5 +63,27 @@ services:
         condition: service_healthy
       database-setup:
         condition: service_completed_successfully
+    ports:
+      - "8080:8080"
     volumes:
       - ./debezium-conf:/debezium-server/conf:ro
+  todo-generator:
+    build:
+      context: ./todo-generator
+      no_cache: true
+    image: todo-generator
+    container_name: todo-generator
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+      rest-receiver:
+        condition: service_healthy
+      database-setup:
+        condition: service_completed_successfully
+      debezium-server:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: "db"
+      POSTGRES_USERNAME: "todo_service"
+      POSTGRES_PASSWORD: "postgres"
