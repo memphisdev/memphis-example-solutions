@@ -134,6 +134,10 @@ def log_event(station):
         return jsonify({}), 500
     
     return jsonify({}), 200
+
+@app.route("/healthcheck", methods=["GET"])
+def healthcheck():
+    return jsonify({"healthy" : True}), 200
     
 if __name__ == "__main__":
     for key in [MEMPHIS_HOST_KEY, MEMPHIS_USERNAME_KEY, MEMPHIS_PASSWORD_KEY]:
