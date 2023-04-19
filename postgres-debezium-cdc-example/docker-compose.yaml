@@ -30,33 +30,17 @@ services:
       POSTGRES_HOST: "db"
       POSTGRES_USER_PASSWORD: "postgres"
       POSTGRES_ADMIN_PASSWORD: "postgres"
-  rest-receiver:
-    build:
-      context: ./rest-receiver
-      no_cache: true
-    image: rest-receiver
-    container_name: rest-receiver
-    restart: always
-    healthcheck:
-      test: curl http://localhost:8000/healthcheck || exit 1
-      interval: 5s
-      timeout: 3s
-      retries: 5
-    ports:
-      - "8000:8000"
   debezium-server:
     image: docker.io/debezium/server:2.2
     container_name: debezium-server
     restart: always
     healthcheck:
-      test: curl http://localhost:8080/q/health || exit 1
+      test: curl http://debezium-server:8080/q/health || exit 1
       interval: 5s
       timeout: 3s
       retries: 5
     depends_on:
       db:
-        condition: service_healthy
-      rest-receiver:
         condition: service_healthy
       database-setup:
         condition: service_completed_successfully
@@ -73,8 +57,6 @@ services:
     restart: "no"
     depends_on:
       db:
-        condition: service_healthy
-      rest-receiver:
         condition: service_healthy
       database-setup:
         condition: service_completed_successfully
