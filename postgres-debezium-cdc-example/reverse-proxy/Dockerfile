@@ -6,6 +6,6 @@ WORKDIR /app
 COPY reverse_proxy.py /app/
 
 RUN pip3 install -U pip wheel
-RUN pip3 install Flask
+RUN pip3 install Flask requests
 
 CMD python3 reverse_proxy.py
