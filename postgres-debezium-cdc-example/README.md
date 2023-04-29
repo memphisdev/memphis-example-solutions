@@ -32,8 +32,15 @@ that prints the events to the console.  A diagram of the architecture is provide
 
 ## Steps for Running the Example
 
-1. [Start and configure Memphis.dev](docs/setup_memphis.md)
-1. [Start the reverse proxy](docs/run_reverse_proxy.md)
-1. [Start test consumer](docs/run_test_consumer.md)
-1. [Start CDC services](docs/run_cdc_services.md)
-1. [Inspect the logs](docs/inspect_logs.md)
+1. Build the Docker images:
+   `docker compose build --pull`
+1. Start Memphis.dev:
+   `docker compose up -d memphis-rest-gateway`
+1. [Configure Memphis.dev](setup_memphis.md)
+1. Start the printing consumer:
+   `docker compose up -d printing-consumer`
+1. Start the todo generator, PostgreSQL database, and Debezium Server:
+   `docker compose up -d todo-generator`
+1. Check the container statuses (`docker ps`), Memphis.dev station overview, and [Docker logs](docs/inspect_logs.md) to confirm it works
+
+Note: We currently build our own Docker image for Debezium Server from the main branch because JWT authentication (see [this PR](https://github.com/debezium/debezium-server/pull/20)) is not yet available in a released version.

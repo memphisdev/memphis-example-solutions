@@ -1,11 +1,13 @@
 from __future__ import annotations
 import asyncio
+import os
+
 from memphis import Memphis, MemphisError, MemphisConnectError, MemphisHeaderError
 
-STATION = "todo-cdc-events"
-USERNAME = "todocdcservice"
-PASSWORD = "todocdcservice"
-HOST = "localhost"
+STATION_KEY = "MEMPHIS_STATION"
+USERNAME_KEY = "MEMPHIS_USERNAME"
+PASSWORD_KEY = "MEMPHIS_PASSWORD"
+HOST_KEY = "MEMPHIS_HOST"
         
 async def main():
     async def msg_handler(msgs, error, context):
@@ -23,9 +25,11 @@ async def main():
     try:
         print("Waiting on messages...")
         memphis = Memphis()
-        await memphis.connect(host=HOST, username=USERNAME, password=PASSWORD)
+        await memphis.connect(host=os.environ[HOST_KEY],
+                              username=os.environ[USERNAME_KEY],
+                              password=os.environ[PASSWORD_KEY])
         
-        consumer = await memphis.consumer(station_name=STATION, consumer_name="test-consumer", consumer_group="")
+        consumer = await memphis.consumer(station_name=os.environ[STATION_KEY], consumer_name="printing-consumer", consumer_group="")
         consumer.consume(msg_handler)
         # Keep your main thread alive so the consumer will keep receiving data
         await asyncio.Event().wait()
@@ -37,4 +41,9 @@ async def main():
         await memphis.close()
         
 if __name__ == '__main__':
+    for key in [HOST_KEY, USERNAME_KEY, PASSWORD_KEY, STATION_KEY]:
+        if key not in os.environ:
+            logging.error("Expected environmental variable {} not set".format(key))
+            sys.exit(1)    
+
     asyncio.run(main())
