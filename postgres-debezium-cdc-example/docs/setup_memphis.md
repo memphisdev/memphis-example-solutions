@@ -1,18 +1,5 @@
 # Setting up Memphis
-The first step in running the CDC example solution is to start and configure an instance of [Memphis.dev](https://github.com/memphisdev/memphis).
-
-## Running the Memphis.dev Services
-The easiest way to run Memphis.dev locally is with the Docker Compose configuration.
-
-1. Check out the repository:
-   ```bash
-   $ git clone https://github.com/memphisdev/memphis-docker.git
-   ```
-1. Start the Memphis.dev services:
-   ```bash
-   $ cd memphis-docker
-   $ docker compose up -d
-   ```
+Memphis.dev must be configured for use with the CDC example.
 
 ## Setting up a Station and User
 In Memphis.dev, topics are called "stations".  When Memphis.dev is run for the first time, the web UI provides a wizard for creating your first station and user.
