@@ -33,7 +33,7 @@ that prints the events to the console.  A diagram of the architecture is provide
 ## Steps for Running the Example
 
 1. Build the Docker images:
-   `docker compose build --pull`
+   `docker compose build --pull --no-cache`
 1. Start Memphis.dev:
    `docker compose up -d memphis-rest-gateway`
 1. [Configure Memphis.dev](docs/setup_memphis.md)
