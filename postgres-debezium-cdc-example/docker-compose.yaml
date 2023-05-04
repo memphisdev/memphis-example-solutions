@@ -146,3 +146,19 @@ services:
       - ROOT_PASSWORD=memphis
       - MEMPHIS_HOST=memphis
       - HTTP_PORT=4444
+
+  printing-consumer:
+      build:
+        context: ./printing-consumer
+        no_cache: true
+      image: printing-consumer
+      container_name: printing-consumer
+      restart: always
+      depends_on:
+        memphis:
+          condition: service_healthy
+      environment:
+        MEMPHIS_HOST: "memphis"
+        MEMPHIS_USERNAME: "todocdcservice"
+        MEMPHIS_PASSWORD: "todocdcservice"
+        MEMPHIS_STATION: "todo-cdc-events"
