@@ -1,0 +1,32 @@
+---
+version: '3'
+services:
+  db:
+    image: docker.io/mongo:latest
+    container_name: mongodb
+    healthcheck:
+      test: mongosh --quiet --eval 'db.runCommand("ping").ok' localhost:27017/test
+      interval: 3s
+      timeout: 3s
+      retries: 3
+    restart: "on-failure"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "mongodb"
+
+  mongo-todo-generator:
+    build:
+      context: ./todo-generator
+      no_cache: true
+    image: mongo-todo-generator
+    container_name: mongo-todo-generator
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MONGO_HOST: "db"
+      MONGO_USERNAME: "root"
+      MONGO_PASSWORD: "mongodb"
