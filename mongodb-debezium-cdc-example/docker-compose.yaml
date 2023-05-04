@@ -4,6 +4,8 @@ services:
   db:
     image: docker.io/mongo:latest
     container_name: mongodb
+    # enable replicate set
+    command: mongod --replSet rs0
     healthcheck:
       test: mongosh --quiet --eval 'db.runCommand("ping").ok' localhost:27017/test
       interval: 3s
