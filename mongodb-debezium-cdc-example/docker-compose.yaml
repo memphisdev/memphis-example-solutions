@@ -16,7 +16,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: "root"
       MONGO_INITDB_ROOT_PASSWORD: "mongodb"
 
-  mongo-todo-generator:
+  todo-generator:
     build:
       context: ./todo-generator
       no_cache: true

@@ -36,7 +36,15 @@ if __name__ == "__main__":
 
     client = MongoClient(db_uri)
     db = client[DATABASE_NAME]
-    collection = db[COLLECTION_NAME]
+
+    if COLLECTION_NAME in db.list_collection_names():
+        db.drop_collection(COLLECTION_NAME)
+
+    # using this syntax to enable pre- and post-images
+    # these are needed to populate the "before" fields
+    # for CDC
+    collection = db.create_collection(name=COLLECTION_NAME,
+                                      changeStreamPreAndPostImages={ "enabled" : True })
 
     while True:
         todo_item = {}
