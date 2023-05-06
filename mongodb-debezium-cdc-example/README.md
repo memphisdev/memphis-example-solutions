@@ -1,4 +1,4 @@
-# PostgreSQL Debezium CDC Example
+# MongoDB Debezium CDC Example
 
 ## Use Case Description
 Change data capture (CDC) is an increasingly popular pattern for monitoring
