@@ -2,10 +2,12 @@
 version: '3'
 services:
   db:
-    image: docker.io/mongo:latest
-    container_name: mongodb
-    # enable replicate set
-    command: mongod --replSet rs0
+    build:
+      context: ./mongodb
+      no_cache: true
+    image: mongodb
+    container_name: mongodb-replica1
+    command: mongod --replSet rs0 --keyFile /mongodb-conf/keyFile --bind_ip_all
     healthcheck:
       test: mongosh --quiet --eval 'db.runCommand("ping").ok' localhost:27017/test
       interval: 3s
@@ -18,12 +20,76 @@ services:
       MONGO_INITDB_ROOT_USERNAME: "root"
       MONGO_INITDB_ROOT_PASSWORD: "mongodb"
 
+  db-replica2:
+    build:
+      context: ./mongodb
+      no_cache: true
+    image: mongodb
+    container_name: mongodb-replica2
+    command: mongod --replSet rs0 --keyFile /mongodb-conf/keyFile --bind_ip_all --port 27018
+    healthcheck:
+      test: mongosh --quiet --eval 'db.runCommand("ping").ok' localhost:27018/test
+      interval: 3s
+      timeout: 3s
+      retries: 3
+    restart: "on-failure"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "27018:27018"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "mongodb"
+
+  db-replica3:
+    build:
+      context: ./mongodb
+      no_cache: true
+    image: mongodb
+    container_name: mongodb-replica3
+    command: mongod --replSet rs0 --keyFile /mongodb-conf/keyFile --bind_ip_all --port 27019
+    healthcheck:
+      test: mongosh --quiet --eval 'db.runCommand("ping").ok' localhost:27019/test
+      interval: 3s
+      timeout: 3s
+      retries: 3
+    restart: "on-failure"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "27019:27019"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: "root"
+      MONGO_INITDB_ROOT_PASSWORD: "mongodb"
+
+  database-setup:
+    build:
+      context: ./database-setup
+      no_cache: true
+    image: mongodb-database-setup
+    container_name: mongodb-database-setup
+    restart: "no"
+    depends_on:
+      db:
+        condition: service_healthy
+      db-replica2:
+        condition: service_healthy
+      db-replica3:
+        condition: service_healthy
+    environment:
+      MONGO_HOSTS: "db:27017,db-replica2:27018,db-replica3:27019"
+      MONGO_USERNAME: "root"
+      MONGO_PASSWORD: "mongodb"
+      REPLICA_SET: "rs0"
+
   todo-generator:
     build:
       context: ./todo-generator
       no_cache: true
-    image: mongo-todo-generator
-    container_name: mongo-todo-generator
+    image: mongodb-todo-generator
+    container_name: mongodb-todo-generator
     restart: always
     depends_on:
       db:
@@ -58,7 +124,7 @@ services:
       interval: 10s
       retries: 30
       start_period: 5s
-    restart: on-failure
+    restart: "on-failure"
     ports:
       - "9000:9000"
       - "6666:6666"
@@ -78,7 +144,7 @@ services:
     depends_on:
       memphis:
         condition: service_healthy
-    restart: on-failure
+    restart: "on-failure"
     ports:
       - "4444:4444"
     environment:

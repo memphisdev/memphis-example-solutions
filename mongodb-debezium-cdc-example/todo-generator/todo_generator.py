@@ -66,4 +66,6 @@ if __name__ == "__main__":
         # 0.5 sec delay between items
         time.sleep(0.5)
 
-    conn.close()
+    # this will probably never be reached
+    # because we're not trapping signals
+    client.close()
