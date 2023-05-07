@@ -6,7 +6,7 @@ services:
       context: ./mongodb
       no_cache: true
     image: mongodb
-    container_name: mongodb-replica1
+    container_name: mongodb
     command: mongod --replSet rs0 --keyFile /mongodb-conf/keyFile --bind_ip_all
     healthcheck:
       test: mongosh --quiet --eval 'db.runCommand("ping").ok' localhost:27017/test
@@ -16,50 +16,6 @@ services:
     restart: "on-failure"
     ports:
       - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "mongodb"
-
-  db-replica2:
-    build:
-      context: ./mongodb
-      no_cache: true
-    image: mongodb
-    container_name: mongodb-replica2
-    command: mongod --replSet rs0 --keyFile /mongodb-conf/keyFile --bind_ip_all --port 27018
-    healthcheck:
-      test: mongosh --quiet --eval 'db.runCommand("ping").ok' localhost:27018/test
-      interval: 3s
-      timeout: 3s
-      retries: 3
-    restart: "on-failure"
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "27018:27018"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: "root"
-      MONGO_INITDB_ROOT_PASSWORD: "mongodb"
-
-  db-replica3:
-    build:
-      context: ./mongodb
-      no_cache: true
-    image: mongodb
-    container_name: mongodb-replica3
-    command: mongod --replSet rs0 --keyFile /mongodb-conf/keyFile --bind_ip_all --port 27019
-    healthcheck:
-      test: mongosh --quiet --eval 'db.runCommand("ping").ok' localhost:27019/test
-      interval: 3s
-      timeout: 3s
-      retries: 3
-    restart: "on-failure"
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "27019:27019"
     environment:
       MONGO_INITDB_ROOT_USERNAME: "root"
       MONGO_INITDB_ROOT_PASSWORD: "mongodb"
@@ -74,12 +30,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      db-replica2:
-        condition: service_healthy
-      db-replica3:
-        condition: service_healthy
     environment:
-      MONGO_HOSTS: "db:27017,db-replica2:27018,db-replica3:27019"
+      MONGO_HOSTS: "db:27017"
       MONGO_USERNAME: "root"
       MONGO_PASSWORD: "mongodb"
       REPLICA_SET: "rs0"
@@ -94,6 +46,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      database-setup:
+        condition: service_completed_successfully
     environment:
       MONGO_HOST: "db"
       MONGO_USERNAME: "root"

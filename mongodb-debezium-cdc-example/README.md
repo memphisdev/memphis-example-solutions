@@ -34,14 +34,12 @@ that prints the events to the console.  A diagram of the architecture is provide
 
 1. Build the Docker images:
    `docker compose build --pull --no-cache`
-1. Start and setup the MongoDB replica set:
-   `docker compose up -d database-setup`
 1. Start Memphis.dev:
    `docker compose up -d memphis-rest-gateway`
 1. [Configure Memphis.dev](docs/setup_memphis.md)
 1. Start the printing consumer:
    `docker compose up -d printing-consumer`
-1. Start the todo generator:
+1. Start MongoDB, run the database setup, and start the todo generator:
    `docker compose up -d todo-generator`
 1. Start the Debezium Server:
    `docker compose up -d debezium-server`
