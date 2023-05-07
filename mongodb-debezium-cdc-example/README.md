@@ -20,12 +20,10 @@ message broker.  Memphis.dev requires less operational overhead, making it ideal
 teams who want to focus on their customers.
 
 The solution uses the example of a table for storing items in a todo application.  A script
-generates random todo items and inserts them into the PostgreSQL database.  The database is
-configured with write ahead log (WAL) logical replication.  Debezium is configured in standalone
-server mode to listen for events and replicate them to a REST endpoint.  Since the Debezium
-HTTP client doesn't support JWT authentication, a reverse proxy implementation is provided that
-forwards the HTTP requests to the Memphis.dev REST API gateway and handles the JWT authentication
-lifecyle.  The CDC events are pulled from the Memphis.dev station by a simple consumer example
+generates random todo items and inserts them into the MongoDB database.  The database is
+configured with replication.  Debezium is configured in standalone
+server mode to listen for events and sends them to Memphis.dev through the REST gateway.
+The CDC events are pulled from the Memphis.dev station by a simple consumer example
 that prints the events to the console.  A diagram of the architecture is provided below.
 
 ![Solution architecture diagram](docs/solution_architecture.png)
