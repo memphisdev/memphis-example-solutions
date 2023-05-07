@@ -5,34 +5,14 @@ Navigate to the Memphis.dev UI details screen for the "todo-cdc-events" station 
 
 ![Memphis.dev UI station details screen with example messages](memphis_ui_station_with_test_messages.png)
 
-## Check the Reverse Proxy Logs
-The reverse proxy should be producing logs like so:
-
-```
-INFO:root:Trying initial authorization
-INFO:root:Authentication success
-INFO:root:Successfully forward message to Memphis
-INFO:werkzeug:192.168.240.3 - - [18/Apr/2023 19:39:55] "POST /cdc-event/todo-cdc-events HTTP/1.1" 200 -
-INFO:root:Trying to refresh authorization
-INFO:root:Authentication success
-INFO:root:Successfully forward message to Memphis
-INFO:werkzeug:192.168.240.3 - - [18/Apr/2023 19:39:55] "POST /cdc-event/todo-cdc-events HTTP/1.1" 200 -
-INFO:root:Trying to refresh authorization
-INFO:root:Authentication success
-INFO:root:Successfully forward message to Memphis
-INFO:werkzeug:192.168.240.3 - - [18/Apr/2023 19:39:55] "POST /cdc-event/todo-cdc-events HTTP/1.1" 200 -
-INFO:root:Trying to refresh authorization
-INFO:root:Authentication success
-INFO:root:Successfully forward message to Memphis
-INFO:werkzeug:192.168.240.3 - - [18/Apr/2023 19:39:55] "POST /cdc-event/todo-cdc-events HTTP/1.1" 200 -
-```
-
 ## Check the Logs of the CDC Services
 The CDC service logs can be accessed via the `docker logs` command:
 
 ```bash
+$ docker logs mongodb
 $ docker logs todo-generator
 $ docker logs debezium-server
+$ docker logs printing-consumer
 ```
 
 ## Check the Test Consumer Output
@@ -45,4 +25,3 @@ message:  bytearray(b'{"schema":{"type":"struct","fields":[{"type":"struct","fie
 message:  bytearray(b'{"schema":{"type":"struct","fields":[{"type":"struct","fields":[{"type":"int32","optional":false,"field":"item_id"},{"type":"string","optional":false,"field":"description"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"creation_date"},{"type":"int64","optional":true,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"due_date"},{"type":"boolean","optional":false,"field":"completed"}],"optional":true,"name":"tutorial.public.todo_items.Value","field":"before"},{"type":"struct","fields":[{"type":"int32","optional":false,"field":"item_id"},{"type":"string","optional":false,"field":"description"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"creation_date"},{"type":"int64","optional":true,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"due_date"},{"type":"boolean","optional":false,"field":"completed"}],"optional":true,"name":"tutorial.public.todo_items.Value","field":"after"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"version"},{"type":"string","optional":false,"field":"connector"},{"type":"string","optional":false,"field":"name"},{"type":"int64","optional":false,"field":"ts_ms"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"true,last,false,incremental"},"default":"false","field":"snapshot"},{"type":"string","optional":false,"field":"db"},{"type":"string","optional":true,"field":"sequence"},{"type":"string","optional":false,"field":"schema"},{"type":"string","optional":false,"field":"table"},{"type":"int64","optional":true,"field":"txId"},{"type":"int64","optional":true,"field":"lsn"},{"type":"int64","optional":true,"field":"xmin"}],"optional":false,"name":"io.debezium.connector.postgresql.Source","field":"source"},{"type":"string","optional":false,"field":"op"},{"type":"int64","optional":true,"field":"ts_ms"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"id"},{"type":"int64","optional":false,"field":"total_order"},{"type":"int64","optional":false,"field":"data_collection_order"}],"optional":true,"name":"event.block","version":1,"field":"transaction"}],"optional":false,"name":"tutorial.public.todo_items.Envelope","version":1},"payload":{"before":null,"after":{"item_id":29,"description":"GKJOSDRRMTFVEARHGSOS","creation_date":1681864165183150,"due_date":1682123365183150,"completed":false},"source":{"version":"2.2.0.CR1","connector":"postgresql","name":"tutorial","ts_ms":1681864165184,"snapshot":"false","db":"todo_application","sequence":"[\\"26367192\\",\\"26367192\\"]","schema":"public","table":"todo_items","txId":757,"lsn":26367192,"xmin":null},"op":"c","ts_ms":1681864165597,"transaction":null}}')
 message:  bytearray(b'{"schema":{"type":"struct","fields":[{"type":"struct","fields":[{"type":"int32","optional":false,"field":"item_id"},{"type":"string","optional":false,"field":"description"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"creation_date"},{"type":"int64","optional":true,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"due_date"},{"type":"boolean","optional":false,"field":"completed"}],"optional":true,"name":"tutorial.public.todo_items.Value","field":"before"},{"type":"struct","fields":[{"type":"int32","optional":false,"field":"item_id"},{"type":"string","optional":false,"field":"description"},{"type":"int64","optional":false,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"creation_date"},{"type":"int64","optional":true,"name":"io.debezium.time.MicroTimestamp","version":1,"field":"due_date"},{"type":"boolean","optional":false,"field":"completed"}],"optional":true,"name":"tutorial.public.todo_items.Value","field":"after"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"version"},{"type":"string","optional":false,"field":"connector"},{"type":"string","optional":false,"field":"name"},{"type":"int64","optional":false,"field":"ts_ms"},{"type":"string","optional":true,"name":"io.debezium.data.Enum","version":1,"parameters":{"allowed":"true,last,false,incremental"},"default":"false","field":"snapshot"},{"type":"string","optional":false,"field":"db"},{"type":"string","optional":true,"field":"sequence"},{"type":"string","optional":false,"field":"schema"},{"type":"string","optional":false,"field":"table"},{"type":"int64","optional":true,"field":"txId"},{"type":"int64","optional":true,"field":"lsn"},{"type":"int64","optional":true,"field":"xmin"}],"optional":false,"name":"io.debezium.connector.postgresql.Source","field":"source"},{"type":"string","optional":false,"field":"op"},{"type":"int64","optional":true,"field":"ts_ms"},{"type":"struct","fields":[{"type":"string","optional":false,"field":"id"},{"type":"int64","optional":false,"field":"total_order"},{"type":"int64","optional":false,"field":"data_collection_order"}],"optional":true,"name":"event.block","version":1,"field":"transaction"}],"optional":false,"name":"tutorial.public.todo_items.Envelope","version":1},"payload":{"before":null,"after":{"item_id":30,"description":"LKLYUSHJFQJKKHUHFMON","creation_date":1681864165686865,"due_date":null,"completed":false},"source":{"version":"2.2.0.CR1","connector":"postgresql","name":"tutorial","ts_ms":1681864165688,"snapshot":"false","db":"todo_application","sequence":"[\\"26367408\\",\\"26367408\\"]","schema":"public","table":"todo_items","txId":758,"lsn":26367408,"xmin":null},"op":"c","ts_ms":1681864166104,"transaction":null}}')
 ```
-
