@@ -5,34 +5,14 @@ Navigate to the Memphis.dev UI details screen for the "todo-cdc-events" station 
 
 ![Memphis.dev UI station details screen with example messages](memphis_ui_station_with_test_messages.png)
 
-## Check the Reverse Proxy Logs
-The reverse proxy should be producing logs like so:
-
-```
-INFO:root:Trying initial authorization
-INFO:root:Authentication success
-INFO:root:Successfully forward message to Memphis
-INFO:werkzeug:192.168.240.3 - - [18/Apr/2023 19:39:55] "POST /cdc-event/todo-cdc-events HTTP/1.1" 200 -
-INFO:root:Trying to refresh authorization
-INFO:root:Authentication success
-INFO:root:Successfully forward message to Memphis
-INFO:werkzeug:192.168.240.3 - - [18/Apr/2023 19:39:55] "POST /cdc-event/todo-cdc-events HTTP/1.1" 200 -
-INFO:root:Trying to refresh authorization
-INFO:root:Authentication success
-INFO:root:Successfully forward message to Memphis
-INFO:werkzeug:192.168.240.3 - - [18/Apr/2023 19:39:55] "POST /cdc-event/todo-cdc-events HTTP/1.1" 200 -
-INFO:root:Trying to refresh authorization
-INFO:root:Authentication success
-INFO:root:Successfully forward message to Memphis
-INFO:werkzeug:192.168.240.3 - - [18/Apr/2023 19:39:55] "POST /cdc-event/todo-cdc-events HTTP/1.1" 200 -
-```
-
 ## Check the Logs of the CDC Services
 The CDC service logs can be accessed via the `docker logs` command:
 
 ```bash
+$ docker logs postgres
 $ docker logs todo-generator
 $ docker logs debezium-server
+$ docker logs printing-consumer
 ```
 
 ## Check the Test Consumer Output
