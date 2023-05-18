@@ -12,11 +12,13 @@ The CDC service logs can be accessed via the `docker logs` command:
 $ docker logs mongodb
 $ docker logs todo-generator
 $ docker logs debezium-server
-$ docker logs printing-consumer
+$ docker logs cdc-transformer
+$ docker logs raw-printing-consumer
+$ docker logs cleaned-printing-consumer
 ```
 
-## Check the Test Consumer Output
-The test consumer should produce output like so:
+## Check the Printing Consumer Outputs
+The consumers should produce output like so:
 
 ```
 Waiting on messages...

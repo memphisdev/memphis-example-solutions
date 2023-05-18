@@ -8,12 +8,12 @@ In Memphis.dev, topics are called "stations".  When Memphis.dev is run for the f
    ![Memphis.dev UI start page](memphis_ui_first_page.png)
 1. Log in with the username "root" and the password "memphis"
    ![Memphis.dev UI root login](memphis_ui_login_root.png)
-1. Create your first station.  Enter the station name as "todo-cdc-events".  Leave the other settings at their defaults and click the "Next" button in the bottom right.
+1. Create your first station.  Enter the station name as "raw-todo-cdc-events".  Leave the other settings at their defaults and click the "Next" button in the bottom right.
    ![Memphis.dev UI wizard create station page](memphis_ui_create_station.png)
 1. Create your first user.  Use the "todocdcservice" as the username and password.  Click the "Next" button in the bottom right.
    ![Memphis.dev UI wizard create user page](memphis_ui_create_user.png)
 1. Click "Next" button on the producer and consumer example screens and finalize the creation.
-1. You will be forwarded to the details screen for the new "todo-cdc-events" station.
+1. You will be forwarded to the details screen for the new "raw-todo-cdc-events" station.
    ![Memphis.dev UI station overview page](memphis_ui_station_details.png)
 
 ## Testing the Memphis.dev Configuration
