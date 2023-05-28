@@ -47,7 +47,21 @@ def generate_todo_items():
             else: # set item to null
                 todo_item[key] = None
 
-        yield todo_item
+        obj = {
+            "payload" : {
+                "before" : None,
+                "after" : None
+            }
+        }
+
+        # simulates delete (before) or create (after)
+        obj_field = "before"
+        if random.random() < 0.5:
+            obj_field = "after"
+
+        obj["payload"][obj_field] = todo_item
+
+        yield obj
 
 async def main():
     try:
