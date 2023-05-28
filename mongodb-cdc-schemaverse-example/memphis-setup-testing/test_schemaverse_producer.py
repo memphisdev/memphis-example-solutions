@@ -62,10 +62,18 @@ async def main():
             print(item)
             msg = json.dumps(item)
             print("Sending message: {}".format(msg))
-            await producer.produce(bytearray(msg, "utf-8"))
+            try:
+                await producer.produce(bytearray(msg, "utf-8"))
+            # The message is still sent even if a schema error occurs
+            # we want to supress the error because we'll handle schema
+            # violations in another place
+            except MemphisSchemaError as e:
+                print(e)
+                print("Continuing...")
             time.sleep(0.5)
 
-    except (MemphisError, MemphisConnectError, MemphisHeaderError, MemphisSchemaError) as e:
+    except (MemphisError, MemphisConnectError, MemphisHeaderError) as e:
+        print(type(e))
         print(e)
 
     finally:
