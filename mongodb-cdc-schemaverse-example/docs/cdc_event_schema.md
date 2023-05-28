@@ -35,16 +35,16 @@
 			"type" : "object",
 			"properties" : {
 				"before" : {
-					"oneOf" : [{"type" : "null"}, { "$ref" : "#/$defs/todoItem"}]
+					"oneOf" : [{ "type" : "null" }, { "$ref" : "#/$defs/todoItem" }]
 				},
 				"after" : {
-					"oneOf" : [{"type" : "null"}, { "$ref" : "#/$defs/todoItem"}]
+					"oneOf" : [{ "type" : "null" }, { "$ref" : "#/$defs/todoItem" }]
 				}
 			},
 			"required" : ["before", "after"]
-		},
+		}
 	},
-	"required" : "payload",
+	"required" : ["payload"],
    "$defs" : {
 	  "todoItem" : {
 		  "title": "TodoItem",
