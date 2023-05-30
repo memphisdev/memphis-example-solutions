@@ -13,7 +13,7 @@ CDC has multiple uses, including:
 * Real-time analytics (e.g., calculations and aggregations that power dashboards)
 * Real-time monitoring of suspicious or unexpected events
 
-## Part 1
+## Part 1: Setup MongoDB, Debezium Server, and Memphis.dev
 In this example solution, we illustrate a CDC solution for MongoDB using Debezium that
 replaces [Apache Kafka](https://kafka.apache.org/) with the [Memphis.dev](https://github.com/memphisdev/memphis)
 message broker.  Memphis.dev requires less operational overhead, making it ideal for lean
