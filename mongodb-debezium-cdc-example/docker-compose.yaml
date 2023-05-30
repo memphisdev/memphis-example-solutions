@@ -148,3 +148,36 @@ services:
       MEMPHIS_USERNAME: "todocdcservice"
       MEMPHIS_PASSWORD: "todocdcservice"
       MEMPHIS_STATION: "todo-cdc-events"
+
+  cleaned-printing-consumer:
+    build:
+      context: ./printing-consumer
+      no_cache: true
+    image: printing-consumer
+    container_name: cleaned-printing-consumer
+    restart: always
+    depends_on:
+      memphis:
+        condition: service_healthy
+    environment:
+      MEMPHIS_HOST: "memphis"
+      MEMPHIS_USERNAME: "todocdcservice"
+      MEMPHIS_PASSWORD: "todocdcservice"
+      MEMPHIS_STATION: "cleaned-todo-cdc-events"
+
+  cdc-transformer:
+    build:
+      context: ./cdc-transformer
+      no_cache: true
+    image: cdc-transformer
+    container_name: cdc-transformer
+    restart: always
+    depends_on:
+      memphis:
+        condition: service_healthy
+    environment:
+      MEMPHIS_HOST: "memphis"
+      MEMPHIS_USERNAME: "todocdcservice"
+      MEMPHIS_PASSWORD: "todocdcservice"
+      MEMPHIS_INPUT_STATION: "todo-cdc-events"
+      MEMPHIS_OUTPUT_STATION: "cleaned-todo-cdc-events"
