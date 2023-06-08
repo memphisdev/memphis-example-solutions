@@ -40,5 +40,3 @@ that prints the events to the console.  A diagram of the architecture is provide
 1. Start the todo generator, PostgreSQL database, and Debezium Server:
    `docker compose up -d todo-generator`
 1. Check the container statuses (`docker ps`), Memphis.dev station overview, and [Docker logs](docs/inspect_logs.md) to confirm it works
-
-Note: We currently build our own Docker image for Debezium Server from the main branch because JWT authentication (see [this PR](https://github.com/debezium/debezium-server/pull/20)) is not yet available in a released version.
