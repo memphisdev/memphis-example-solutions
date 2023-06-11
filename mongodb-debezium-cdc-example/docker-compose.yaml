@@ -112,14 +112,11 @@ services:
       - HTTP_PORT=4444
 
   debezium-server:
-    build:
-      context: ./debezium-server
-      no_cache: true
-    image: debezium-server
+    image: quay.io/debezium/server:2.3
     container_name: debezium-server
     restart: always
     healthcheck:
-      test: wget --spider http://debezium-server:8080/q/health || exit 1
+      test: curl http://debezium-server:8080/q/health || exit 1
       interval: 5s
       timeout: 3s
       retries: 5
@@ -131,7 +128,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./debezium-conf:/debezium-server/conf:ro
+      - ./debezium-conf:/debezium/conf:ro
 
   printing-consumer:
     build:
