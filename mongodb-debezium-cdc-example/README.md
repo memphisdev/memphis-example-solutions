@@ -26,7 +26,6 @@ server mode to listen for events and sends them to Memphis.dev through the REST 
 The CDC events are pulled from the Memphis.dev station by a simple consumer example
 that prints the events to the console.  A diagram of the architecture is provided below.
 
-
 ![Solution architecture diagram](docs/solution_architecture_part1.png)
 
 
@@ -42,8 +41,6 @@ that prints the events to the console.  A diagram of the architecture is provide
 1. Start the Debezium Server:
    `docker compose up -d debezium-server`
 1. Check the container statuses (`docker ps`), Memphis.dev station overview, and [Docker logs](docs/inspect_logs.md) to confirm it works
-
-Note: We currently build our own Docker image for Debezium Server from the main branch because JWT authentication (see [this PR](https://github.com/debezium/debezium-server/pull/20)) is not yet available in a released version.
 
 ## Part 2: Add CDC event message transformer
 Debezium Server serializes the MongoDB records as strings within the JSON document like so:
@@ -85,4 +82,118 @@ attached printing consumer, and transformed messages:
 
 ![Cleaned station overview](docs/memphis_ui_cleaned_station_with_messages.png)
 
+## Part 3: Enabling Schema Validation
+Memphis.dev has an awesome functionality called Schemaverse.  It allows operators to define schemas that are applied to incoming messages.
+If a message does not validate against the schema, it will be redirected to the dead-letter station. This prevents invalid messages
+from causing problems downstream.  At the same time, invalid messages are retained so they can be reprocessed.
 
+In part 3, we're going to create a schema and attach it to the `cleaned-todo-cdc-events` station.
+
+1. Navigate to the Schemaverse tab in the Memphis.dev UI:
+
+![Schemaverse tab](docs/memphis_ui_schemaverse_empty.png)
+
+2. Click on one of the "Create from blank" buttons to bring up the "Create schema" window.  Enter "todo-cdc-schema" as the name, select
+"JSON schema" under "Data format", and paste the following JSON into the "Schema structure" box:
+
+```json
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "https://example.com/product.schema.json",
+	"type" : "object",
+	"properties" : {
+		"payload" : {
+			"type" : "object",
+			"properties" : {
+				"before" : {
+					"oneOf" : [{ "type" : "null" }, { "$ref" : "#/$defs/todoItem" }]
+				},
+				"after" : {
+					"oneOf" : [{ "type" : "null" }, { "$ref" : "#/$defs/todoItem" }]
+				}
+			},
+			"required" : ["before", "after"]
+		}
+	},
+	"required" : ["payload"],
+   "$defs" : {
+	  "todoItem" : {
+		  "title": "TodoItem",
+		  "description": "An item in a todo checklist",
+	  	  "type" : "object",
+		  "properties" : {
+			  "_id" : {
+				  "type" : "object",
+				  "properties" : {
+					  "$oid" : {
+						  "type" : "string"
+					  }
+				  }
+			  },
+			  "description" : {
+				  "type" : "string"
+			  },
+			  "creation_timestamp" : {
+				  "type" : "object",
+				  "properties" : {
+					  "$date" : {
+						  "type" : "integer"
+					  }
+				  }
+			  },
+			  "due_date" : {
+			  		"anyOf" : [
+						{
+							"type" : "object",
+							"properties" : {
+								"$date" : {
+									"type" : "integer"
+								}
+							}
+						},
+						{
+							"type" : "null"
+						}
+					]
+			  },
+			  "completed" : {
+				  "type" : "boolean"
+			  }
+		  },
+		  "required" : ["_id", "description", "creation_timestamp", "completed"]
+	  }
+  }
+}
+```
+
+The window should look like so when done:
+
+![Create schema](docs/memphis_ui_create_schema.png)
+
+1. Click the "validate" button to ensure that your schema is syntactically correct.  The window should show the message "Schema is valid."
+
+![Create schema validated](docs/memphis_ui_create_schema_validated.png)
+
+1. Click the "Create schema" button.  You'll be returned to the Schemaverse tab, and the new schema will be shown.
+
+![Schemaverse created](docs/memphis_ui_schemaverse_created.png)
+
+1. Double click on the "todo-cdc-schema" box to bring up its configuration window.
+
+![Schema config window](docs/memphis_ui_schema_config.png)
+
+1. Click "+ Attach to station"
+
+1. Select "cleaned-todo-cdc-events" and click "Attach Selected".
+
+![Schema attach window](docs/memphis_ui_schema_attach.png)
+
+1. If you return to the window for "cleaned-todo-cdc-events" station, you will now see that the schema is attached and an error next to
+"Dead-letter".
+
+![Station with attached_schema](docs/memphis_ui_cleaned_station_with_schema.png)
+
+1. If you click on "Dead-letter" and then "Schema violation", you'll see a list of messages that have been sent to the dead-letter station
+because they didn't validate against the schema.
+
+![dead-letter station](docs/memphis_ui_dead_letter_station.png)
