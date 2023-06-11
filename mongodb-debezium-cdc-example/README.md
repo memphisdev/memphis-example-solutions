@@ -182,9 +182,7 @@ In part 3, we're going to create a schema and attach it to the `cleaned-todo-cdc
 
    ![Schema config window](docs/memphis_ui_schema_config.png)
 
-1. Click "+ Attach to station"
-
-1. Select "cleaned-todo-cdc-events" and click "Attach Selected".
+1. Click "+ Attach to station" to bring up a selection window. Select "cleaned-todo-cdc-events" and click "Attach Selected".
 
    ![Schema attach window](docs/memphis_ui_schema_attach.png)
 
