@@ -96,7 +96,7 @@ In part 3, we're going to create a schema and attach it to the `cleaned-todo-cdc
 2. Click on one of the "Create from blank" buttons to bring up the "Create schema" window.  Enter "todo-cdc-schema" as the name, select
 "JSON schema" under "Data format", and paste the following JSON into the "Schema structure" box:
 
-```json
+   ```json
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://example.com/product.schema.json",
@@ -166,34 +166,34 @@ In part 3, we're going to create a schema and attach it to the `cleaned-todo-cdc
 }
 ```
 
-The window should look like so when done:
+   The window should look like so when done:
 
-![Create schema](docs/memphis_ui_create_schema.png)
+   ![Create schema](docs/memphis_ui_create_schema.png)
 
 1. Click the "validate" button to ensure that your schema is syntactically correct.  The window should show the message "Schema is valid."
 
-![Create schema validated](docs/memphis_ui_create_schema_validated.png)
+   ![Create schema validated](docs/memphis_ui_create_schema_validated.png)
 
 1. Click the "Create schema" button.  You'll be returned to the Schemaverse tab, and the new schema will be shown.
 
-![Schemaverse created](docs/memphis_ui_schemaverse_created.png)
+   ![Schemaverse created](docs/memphis_ui_schemaverse_created.png)
 
 1. Double click on the "todo-cdc-schema" box to bring up its configuration window.
 
-![Schema config window](docs/memphis_ui_schema_config.png)
+   ![Schema config window](docs/memphis_ui_schema_config.png)
 
 1. Click "+ Attach to station"
 
 1. Select "cleaned-todo-cdc-events" and click "Attach Selected".
 
-![Schema attach window](docs/memphis_ui_schema_attach.png)
+   ![Schema attach window](docs/memphis_ui_schema_attach.png)
 
 1. If you return to the window for "cleaned-todo-cdc-events" station, you will now see that the schema is attached and an error next to
 "Dead-letter".
 
-![Station with attached_schema](docs/memphis_ui_cleaned_station_with_schema.png)
+   ![Station with attached_schema](docs/memphis_ui_cleaned_station_with_schema.png)
 
 1. If you click on "Dead-letter" and then "Schema violation", you'll see a list of messages that have been sent to the dead-letter station
 because they didn't validate against the schema.
 
-![dead-letter station](docs/memphis_ui_dead_letter_station.png)
+   ![dead-letter station](docs/memphis_ui_dead_letter_station.png)
