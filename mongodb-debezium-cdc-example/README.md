@@ -96,7 +96,7 @@ In part 3, we're going to create a schema and attach it to the `cleaned-todo-cdc
 2. Click on one of the "Create from blank" buttons to bring up the "Create schema" window.  Enter "todo-cdc-schema" as the name, select
 "JSON schema" under "Data format", and paste the following JSON into the "Schema structure" box:
 
-   ```json
+```json
 {
 	"$schema": "https://json-schema.org/draft/2020-12/schema",
 	"$id": "https://example.com/product.schema.json",
