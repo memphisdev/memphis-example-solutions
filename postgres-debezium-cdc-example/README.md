@@ -32,11 +32,13 @@ that prints the events to the console.  A diagram of the architecture is provide
 
 1. Build the Docker images:
    `docker compose build --pull --no-cache`
+1. Start the todo generator and PostgreSQL database:
+   `docker compose up -d todo-generator`
 1. Start Memphis.dev:
    `docker compose up -d memphis-rest-gateway`
 1. [Configure Memphis.dev](docs/setup_memphis.md)
 1. Start the printing consumer:
    `docker compose up -d printing-consumer`
-1. Start the todo generator, PostgreSQL database, and Debezium Server:
-   `docker compose up -d todo-generator`
+1. Start Debezium Server:
+   `docker compose up -d debezium-server`
 1. Check the container statuses (`docker ps`), Memphis.dev station overview, and [Docker logs](docs/inspect_logs.md) to confirm it works

@@ -32,27 +32,6 @@ services:
       POSTGRES_USER_PASSWORD: "postgres"
       POSTGRES_ADMIN_PASSWORD: "postgres"
 
-  debezium-server:
-    image: quay.io/debezium/server:2.3
-    container_name: debezium-server
-    restart: always
-    healthcheck:
-      test: curl http://debezium-server:8080/q/health || exit 1
-      interval: 5s
-      timeout: 3s
-      retries: 5
-    depends_on:
-      db:
-        condition: service_healthy
-      database-setup:
-        condition: service_completed_successfully
-      memphis-rest-gateway:
-        condition: service_started
-    ports:
-      - "8080:8080"
-    volumes:
-      - ./debezium-conf:/debezium/conf:ro
-
   todo-generator:
     build:
       context: ./todo-generator
@@ -63,28 +42,12 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      debezium-server:
-        condition: service_healthy
+      database-setup:
+        condition: service_completed_successfully
     environment:
       POSTGRES_HOST: "db"
       POSTGRES_USERNAME: "todo_service"
       POSTGRES_PASSWORD: "postgres"
-
-  printing-consumer:
-    build:
-      context: ./printing-consumer
-      no_cache: true
-    image: printing-consumer
-    container_name: printing-consumer
-    restart: always
-    depends_on:
-      memphis:
-        condition: service_healthy
-    environment:
-      MEMPHIS_HOST: "memphis"
-      MEMPHIS_USERNAME: "todocdcservice"
-      MEMPHIS_PASSWORD: "todocdcservice"
-      MEMPHIS_STATION: "todo-cdc-events"
 
   memphis-metadata:
     image: memphisos/memphis-metadata:15-docker
@@ -143,3 +106,38 @@ services:
       - ROOT_PASSWORD=memphis
       - MEMPHIS_HOST=memphis
       - HTTP_PORT=4444
+
+  printing-consumer:
+    build:
+      context: ./printing-consumer
+      no_cache: true
+    image: printing-consumer
+    container_name: printing-consumer
+    restart: always
+    depends_on:
+      memphis:
+        condition: service_healthy
+    environment:
+      MEMPHIS_HOST: "memphis"
+      MEMPHIS_USERNAME: "todocdcservice"
+      MEMPHIS_PASSWORD: "todocdcservice"
+      MEMPHIS_STATION: "todo-cdc-events"
+
+  debezium-server:
+    image: quay.io/debezium/server:2.3
+    container_name: debezium-server
+    restart: always
+    healthcheck:
+      test: curl http://debezium-server:8080/q/health || exit 1
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    depends_on:
+      db:
+        condition: service_healthy
+      memphis-rest-gateway:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./debezium-conf:/debezium/conf:ro
