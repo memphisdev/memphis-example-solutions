@@ -1,6 +1,6 @@
-FROM debian:bullseye-slim
+FROM python:3-slim
 
-RUN apt update && apt upgrade -y && apt install -y python3 python3-pip curl && rm -rf /var/cache/apt/*
+RUN apt update && apt upgrade -y && apt install -y curl && rm -rf /var/cache/apt/*
 
 WORKDIR /app
 COPY cdc_transformer.py /app/

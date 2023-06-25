@@ -1,6 +1,4 @@
-FROM debian:bullseye-slim
-
-RUN apt update && apt upgrade -y && apt install -y python3 python3-pip && rm -rf /var/cache/apt/*
+FROM python:3-slim
 
 WORKDIR /app
 COPY database_setup.py /app/
