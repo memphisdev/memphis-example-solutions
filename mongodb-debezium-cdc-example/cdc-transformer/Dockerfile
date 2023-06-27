@@ -1,7 +1,5 @@
 FROM python:3-slim
 
-RUN apt update && apt upgrade -y && apt install -y curl && rm -rf /var/cache/apt/*
-
 WORKDIR /app
 COPY cdc_transformer.py /app/
 
