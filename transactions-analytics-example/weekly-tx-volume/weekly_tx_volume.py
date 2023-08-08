@@ -3,7 +3,7 @@ import json
 
 from bytewax.dataflow import Dataflow
 from bytewax.window import EventClockConfig
-from bytewax.window import SlidingWindow
+from bytewax.window import TumblingWindow
 
 from memphis.connectors.bytewax import MemphisInput
 from memphis.connectors.bytewax import MemphisOutput
@@ -18,7 +18,7 @@ memphis_src = MemphisInput("localhost",
 memphis_sink = MemphisOutput("localhost",
                              "testuser",
                              "%o3sH$Qfae",
-                             "bps-weekly",
+                             "bps-weekly-tx-volume",
                              "weekly-pipeline")
 
 
@@ -49,9 +49,8 @@ flow.map(create_kv_pair)
 # group by week
 clock_config = EventClockConfig(lambda tx: tx["timestamp"],
                                 wait_for_system_duration=dt.timedelta(days=1))
-window_config = SlidingWindow(length=dt.timedelta(days=7),
-                              offset=dt.timedelta(days=7),
-                              align_to=dt.datetime(2021, 12, 27, tzinfo=dt.timezone.utc)) # a Monday
+window_config = TumblingWindow(length=dt.timedelta(days=7),
+                               align_to=dt.datetime(2021, 12, 27, tzinfo=dt.timezone.utc)) # a Monday
 def build_empty_state():
     return {
         "tx_count" : 0
