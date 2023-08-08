@@ -45,47 +45,24 @@ def create_kv_pair(tx):
 
 flow.map(create_kv_pair)
 
-# group by week
+# calculate tx counts over pairs of consecutive weeks
 clock_config = EventClockConfig(lambda tx: tx["timestamp"],
                                 wait_for_system_duration=dt.timedelta(days=1))
-window_config = SlidingWindow(length=dt.timedelta(days=7),
+window_config = SlidingWindow(length=dt.timedelta(days=14),
                               offset=dt.timedelta(days=7),
                               align_to=dt.datetime(2021, 12, 27, tzinfo=dt.timezone.utc)) # a Monday
 def build_empty_state():
-    return {
-        "tx_count" : 0
-    }
+    return { }
 
 def adder(state, tx):
     year, week, _ = tx["timestamp"].isocalendar()
-    week_start = dt.datetime.fromisocalendar(year, week, 1).astimezone(dt.timezone.utc) # a Monday
-    state["year"] = year
-    state["week"] = week
-    state["tx_count"] += 1
-    state["week_start"] = week_start
+    key = (year, week)
+    state[key] = state.get(key, 0) + 1
     return state
 
 flow.fold_window("count_by_week", clock_config, window_config, build_empty_state, adder)
 
 flow.output("print-weekly-counts", StdOutput())
-
-# calculate week over week change
-clock_config = EventClockConfig(lambda week_count: week_count["week_start"],
-                                wait_for_system_duration=dt.timedelta(days=1))
-window_config = SlidingWindow(length=dt.timedelta(days=14),
-                              offset=dt.timedelta(days=7),
-                              align_to=dt.datetime(2021, 12, 27, tzinfo=dt.timezone.utc)) # a Monday
-def build_empty_state2():
-    return {}
-
-def adder2(state, week_count):
-    key = (week_count["year"], week_count["week"])
-    state[key] = state.get(key, 0) + week_count["tx_count"]
-    return state
-
-flow.fold_window("wow_change", clock_config, window_config, build_empty_state2, adder2)
-
-flow.output("print-sliding-weekly-counts", StdOutput())
 
 # drop key
 def extract_value(kv_pair):
@@ -93,6 +70,7 @@ def extract_value(kv_pair):
     return value
 flow.map(extract_value)
 
+# only keep records which include 2 weeks
 flow.filter(lambda wow_ratios: len(wow_ratios) == 2)
 
 def calculate_wow(kv_pair):
