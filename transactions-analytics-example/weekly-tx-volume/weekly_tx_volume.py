@@ -39,13 +39,12 @@ def parse_datetime(tx):
 
 flow.map(parse_datetime)
 
-# created key from year and week of year
-def key_by_week(tx):
-    year, week, _ = tx["timestamp"].isocalendar()
-    key = f"{year}{week:02d}"
-    return (key, tx)
+# windowing functions need a key
+# but we have just one stream
+def create_kv_pair(tx):
+    return ("ALL", tx)
 
-flow.map(key_by_week)
+flow.map(create_kv_pair)
 
 # group by week
 clock_config = EventClockConfig(lambda tx: tx["timestamp"],
@@ -68,7 +67,10 @@ def adder(state, tx):
 flow.fold_window("count_by_week", clock_config, window_config, build_empty_state, adder)
 
 # drop key
-flow.map(lambda kv: kv[1])
+def extract_value(kv_pair):
+    key, value = kv_pair
+    return value
+flow.map(extract_value)
 
 # serialize JSON document
 flow.map(json.dumps)
