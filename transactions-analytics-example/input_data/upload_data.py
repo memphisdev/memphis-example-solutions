@@ -14,7 +14,7 @@ USERNAME = "testuser"
 PASSWORD = "%o3sH$Qfae"
 HOST = "localhost"
 
-def add_quantities(tx_prod_df):
+def add_quantities(df):
     def sample_quantity():
         r = random.random()
         if r <= 0.7:
@@ -26,32 +26,32 @@ def add_quantities(tx_prod_df):
 
         return q
 
-    tx_prod_df["quantity"] = [sample_quantity() for i in range(len(tx_prod_df))]
+    df["quantity"] = [sample_quantity() for i in range(len(df))]
 
-    return tx_prod_df.copy()
+    return df.copy()
 
-months = {
-    "JANUARY" : 1,
-    "FEBRUARY" : 2,
-    "MARCH" : 3,
-    "APRIL" : 4,
-    "MAY" : 5,
-    "JUNE" : 6,
-    "JULY" : 7,
-    "AUGUST" : 8,
-    "SEPTEMBER" : 9,
-    "OCTOBER" : 10,
-    "NOVEMBER" : 11,
-    "DECEMBER" : 12
-}
+def add_timestamps(df):
+    MONTHS = {
+        "JANUARY" : 1,
+        "FEBRUARY" : 2,
+        "MARCH" : 3,
+        "APRIL" : 4,
+        "MAY" : 5,
+        "JUNE" : 6,
+        "JULY" : 7,
+        "AUGUST" : 8,
+        "SEPTEMBER" : 9,
+        "OCTOBER" : 10,
+        "NOVEMBER" : 11,
+        "DECEMBER" : 12
+    }
 
-def add_timestamps(tx_df):
     def sample_timestamp(month):
         """
         Samples a timestamp for the given month
         in the year 2022.
         """
-        month_number = months[month]
+        month_number = MONTHS[month]
 
         month_start = dt.datetime(2022, month_number, 1)
 
@@ -68,15 +68,15 @@ def add_timestamps(tx_df):
 
         sampled_timestamp = random.uniform(start_timestamp, end_timestamp)
 
-        timestamp_dt = dt.datetime.fromtimestamp(sampled_timestamp)
+        timestamp_dt = dt.datetime.utcfromtimestamp(sampled_timestamp)
 
         return timestamp_dt
 
-    tx_df["timestamp"] = tx_df["month"].apply(sample_timestamp)
+    df["timestamp"] = df["month"].apply(sample_timestamp)
 
-    return tx_df.copy()
+    return df.copy()
 
-def construct_transactions(tx_df, tx_prod_df):
+def construct_transactions(tx_df, line_items_df):
     """
     For each transaction, generates a JSON object of the form:
 
@@ -84,7 +84,7 @@ def construct_transactions(tx_df, tx_prod_df):
         "transaction_id" : 123,
         "timestamp" : "2019-05-18T15:17:08.132263",
         "customer_id" : 123,
-        "items_sold" : [
+        "line_items" : [
             { "item_id" : 123, "quantity" : 1},
             { "item_id" : 101, "quantity" : 2}
         ]
@@ -98,19 +98,30 @@ def construct_transactions(tx_df, tx_prod_df):
             "transaction_id" : int(row["id"]),
             "customer_id" : int(row.customer_id),
             "timestamp": row.timestamp.isoformat(),
-            "items_sold" : [ ]
+            "line_items" : [ ]
         }
 
-        transactions[row.id] = obj
+        transactions[row["id"]] = obj
 
-    for idx, row in tx_prod_df.iterrows():
+    print("Converted transactions to objects.")
+
+    for idx, row in line_items_df.iterrows():
         obj = {
             "item_id" : int(row.product_id),
             "quantity" : int(row.quantity)
         }
-        transactions[row.transaction_id]["items_sold"].append(obj)
+        transactions[row.transaction_id]["line_items"].append(obj)
 
-    return list(transactions.values())
+    print("Populated transaction objects with line items.")
+
+    transactions = list(transactions.values())
+    transactions = [(dt.datetime.fromisoformat(tx["timestamp"]), tx) for tx in transactions]
+    transactions.sort()
+    transactions = [tx for _, tx in transactions]
+
+    print("Sorted transactions.")
+
+    return transactions
 
 async def upload_transactions(transactions):
     memphis = Memphis()
@@ -130,7 +141,7 @@ def parseargs():
                         type=str,
                         required=True)
 
-    parser.add_argument("--transactions-products-fl",
+    parser.add_argument("--line-items-fl",
                         type=str,
                         required=True)
 
@@ -140,11 +151,11 @@ if __name__ == "__main__":
     args = parseargs()
 
     tx_df = pd.read_table(args.transactions_fl, compression="gzip")
-    tx_prod_df = pd.read_table(args.transactions_products_fl, compression="gzip")
+    line_items_df = pd.read_table(args.line_items_fl, compression="gzip")
 
     print("Loaded data.")
     
-    tx_prod_df = add_quantities(tx_prod_df)
+    line_items_df = add_quantities(line_items_df)
 
     print("Added quantities.")
 
@@ -152,7 +163,7 @@ if __name__ == "__main__":
 
     print("Added timestamps.")
 
-    transactions = construct_transactions(tx_df, tx_prod_df)
+    transactions = construct_transactions(tx_df, line_items_df)
 
     print("Constructed transactions.")
 
