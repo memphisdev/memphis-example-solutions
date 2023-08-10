@@ -58,8 +58,9 @@ def build_empty_state():
 
 def adder(state, tx):
     year, week, _ = tx["timestamp"].isocalendar()
-    state["year"] = year
-    state["week"] = week
+    # get first day of that week
+    week_start = dt.date.fromisocalendar(year, week, 1).isoformat()
+    state["week_start"] = week_start
     state["tx_count"] += 1
     return state
 
