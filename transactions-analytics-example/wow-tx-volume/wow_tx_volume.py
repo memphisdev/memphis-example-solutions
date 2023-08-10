@@ -62,8 +62,6 @@ def adder(state, tx):
 
 flow.fold_window("count_by_week", clock_config, window_config, build_empty_state, adder)
 
-flow.output("print-weekly-counts", StdOutput())
-
 # drop key
 def extract_value(kv_pair):
     key, value = kv_pair
@@ -80,14 +78,17 @@ def calculate_wow(kv_pair):
     first_week, second_week = week_counts
 
     wow = first_week[1] / second_week[1]
+    first_year, first_week = first_week[0]
+    second_year, second_week = second_week[0]
 
     return {
         "wow" : wow,
-        "week1_year" : first_week[0][0],
-        "week1_week" : first_week[0][1],
-        "week2_year" : second_week[0][0],
-        "week2_week" : second_week[0][1]
+        "week1_start_date" : dt.date.fromisocalendar(first_year, first_week, 1).isoformat(),
+        "week1_end_date" : dt.date.fromisocalendar(first_year, first_week, 7).isoformat(),
+        "week2_start_date" : dt.date.fromisocalendar(second_year, second_week, 1).isoformat(),
+        "week2_end_date" : dt.date.fromisocalendar(second_year, second_week, 7).isoformat()
     }
+
 flow.map(calculate_wow)
 
 flow.output("print-sliding-wow", StdOutput())
