@@ -78,7 +78,7 @@ def calculate_wow(kv_pair):
 
     first_week, second_week = week_counts
 
-    wow = first_week[1] / second_week[1]
+    wow = second_week[1] / first_week[1]
     first_year, first_week = first_week[0]
     second_year, second_week = second_week[0]
 
