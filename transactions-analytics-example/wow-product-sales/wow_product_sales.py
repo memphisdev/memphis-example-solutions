@@ -58,22 +58,23 @@ window_config = SlidingWindow(length=dt.timedelta(days=14),
                               offset=dt.timedelta(days=7),
                               align_to=dt.datetime(2021, 12, 27, tzinfo=dt.timezone.utc)) # a Monday
 def build_empty_state():
-    return { }
+    return { "tx_counts" : { } }
 
 def adder(state, tx):
     year, week, _ = tx["timestamp"].isocalendar()
     key = (year, week)
-    state[key] = state.get(key, 0) + 1
+    state["tx_counts"][key] = state["tx_counts"].get(key, 0) + 1
+    state["item_id"] = tx["item_id"]
     return state
 
 flow.fold_window("count_by_week", clock_config, window_config, build_empty_state, adder)
 
 # only keep records which include 2 weeks
-flow.filter(lambda kv_pair: len(kv_pair[1]) == 2)
+flow.filter(lambda kv_pair: len(kv_pair[1]["tx_counts"]) == 2)
 
 def calculate_wow(kv_pair):
-    key, value = kv_pair
-    week_counts = list(value.items())
+    _, window_state = kv_pair
+    week_counts = list(window_state["tx_counts"].items())
     week_counts.sort()
 
     first_week, second_week = week_counts
@@ -83,7 +84,7 @@ def calculate_wow(kv_pair):
     second_year, second_week = second_week[0]
 
     return {
-        "item_id" : key,
+        "item_id" : window_state["item_id"],
         "wow" : wow,
         "week1_start_date" : dt.date.fromisocalendar(first_year, first_week, 1).isoformat(),
         "week1_end_date" : dt.date.fromisocalendar(first_year, first_week, 7).isoformat(),
