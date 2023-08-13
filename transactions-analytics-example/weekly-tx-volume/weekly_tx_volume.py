@@ -1,6 +1,7 @@
 import datetime as dt
 import json
 
+from bytewax.connectors.stdio import StdOutput
 from bytewax.dataflow import Dataflow
 from bytewax.window import EventClockConfig
 from bytewax.window import TumblingWindow
@@ -65,6 +66,8 @@ def adder(state, tx):
     return state
 
 flow.fold_window("count_by_week", clock_config, window_config, build_empty_state, adder)
+
+flow.output("print-windows", StdOutput())
 
 # drop key
 def extract_value(kv_pair):
