@@ -10,9 +10,9 @@ import pandas as pd
 import tqdm
 
 STATION = "bps-transactions"
-USERNAME = "testuser"
-PASSWORD = "%o3sH$Qfae"
-HOST = "localhost"
+USERNAME = "root"
+PASSWORD = "memphis"
+HOST = "memphis"
 
 def add_quantities(df):
     def sample_quantity():
